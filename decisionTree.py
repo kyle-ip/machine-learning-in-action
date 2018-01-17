@@ -1,9 +1,9 @@
 from collections import Counter, defaultdict
 from math import log
+import pickle
 import operator
 
-import matplotlib.pyplot as plt
-
+from Ch03.treePlotter import *
 
 def createDataSet():
     """ 创建示例数据集 """
@@ -11,8 +11,8 @@ def createDataSet():
     dataSet = [
         [1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'],
         [0, 1, 'no'], [0, 1, 'no']
-    ]                                                       # 前两项为特征值，最后一项为分类
-    labels = ['no surfacing', 'flippers']                   # 特征对应的label
+    ]                                                       # 前两项为属性值，最后一项为分类
+    labels = ['no surfacing', 'flippers']                   # 属性值对应的label
     return dataSet, labels
 
 
@@ -87,10 +87,11 @@ def createTree(dataSet, labels):
     featValues = {i[bestFeat] for i in dataSet}             # 取该特征下的所有属性值
 
     myTree = {bestFeatLabel: {}}
-    for value in featValues:                                # 遍历所有特征值来创建子集，并对子集递归调用创建子树
+    for value in featValues:                                # 遍历所有属性值来创建子集，并对子集递归调用创建子树
         myTree[bestFeatLabel][value] = createTree(
             splitDataSet(dataSet, bestFeat, value), labels[:]
         )
+
     return myTree                            
 
 
@@ -149,54 +150,30 @@ def retrieveTree(i):
     return listOfTrees[i]
 
 
+def classify(inputTree, featLabels, testVec):
+    """ 使用决策树实现分类 """
 
-def classify(inputTree,featLabels,testVec):
-    firstStr = inputTree.keys()[0]
+    firstStr = list(inputTree.keys())[0]        # 获取特征及其下子树和叶节点
     secondDict = inputTree[firstStr]
-    featIndex = featLabels.index(firstStr)
-    key = testVec[featIndex]
-    valueOfFeat = secondDict[key]
-    if isinstance(valueOfFeat, dict): 
-        classLabel = classify(valueOfFeat, featLabels, testVec)
-    else: classLabel = valueOfFeat
-    return classLabel
 
-def storeTree(inputTree,filename):
-    import pickle
-    fw = open(filename,'w')
-    pickle.dump(inputTree,fw)
-    fw.close()
-    
+    key = testVec[featLabels.index(firstStr)]   # 取该特征的在标签列表中的下标，并通过标签下标取测试向量的属性值
+    valueOfFeat = secondDict[key]               # 在树中取该属性值对应的决策
+
+    return classify(valueOfFeat, featLabels, testVec) \
+        if isinstance(valueOfFeat, dict) else valueOfFeat
+
+
+def storeTree(inputTree, filename):
+    """ 存储决策树：毋须每次使用都重新创建 """
+
+    with open(filename, 'w') as f:
+        pickle.dumps(inputTree, f)
+
+
 def grabTree(filename):
-    import pickle
-    fr = open(filename)
-    return pickle.load(fr)
+    """ 读取决策树 """
 
-
-def createPlot():
-    decisionNode = dict(boxstyle="sawtooth", fc="0.8")
-    leafNode = dict(boxstyle="round4", fc="0.8")
-    fig = plt.figure(1, facecolor="white")
-    fig.clf()
-    createPlot.ax1 = plt.subplot(111, frameon=False)
-    plotNode("decisionNode", (0.5, 0.1), (0.1, 0.5), decisionNode)
-    plotNode("leafNode", (0.8, 0.1), (0.3, 0.8), leafNode)
-    plt.show()
-
-
-def plotNode(nodeTxt, centerPt, parentPt, nodeType):
-    arrow_args = dict(arrowstyle="<-")
-    createPlot.ax1.annotate(
-        nodeTxt,
-        xy=parentPt,
-        xycoords="axes fraction",
-        xytext=centerPt,
-        textcoords="axes fraction",
-        va="center",
-        ha="center",
-        bbox=nodeType,
-        arrowprops=arrow_args
-    )
+    return pickle.load(open(filename))
 
 
 if __name__ == "__main__":
@@ -211,6 +188,6 @@ if __name__ == "__main__":
     # print(getTreeDepth(retrieveTree(0)))
     # createPlot()
 
+    mytree = retrieveTree(0)
 
-
-
+    print(classify(mytree, labels, [1, 0]))
