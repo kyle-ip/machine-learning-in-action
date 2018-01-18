@@ -23,7 +23,7 @@ def classify0(inX, dataSet, labels, k):
     :return:
     """
 
-    # 对特征值作距离计算
+    # 对属性值作距离计算
     dataSetSize = dataSet.shape[0]                      # 取数据集行数
     diffMat = tile(inX, (dataSetSize, 1)) - dataSet     # 以输入向量创建dataSetSize行、重复1次矩阵（把inX纵向复制dataSetSize-1次组成矩阵）
     distances = ((diffMat ** 2).sum(axis=1)) ** 0.5     # 求输入向量与训练集各点的距离（sum对行求和，同行每列相加化为一列，axis=0则对列求和）

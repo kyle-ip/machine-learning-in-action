@@ -1,5 +1,6 @@
 from collections import Counter, defaultdict
 from math import log
+import os
 import pickle
 import operator
 
@@ -11,7 +12,7 @@ def createDataSet():
     dataSet = [
         [1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'],
         [0, 1, 'no'], [0, 1, 'no']
-    ]                                                       # 前两项为属性值，最后一项为分类
+    ]                                                       # 前两项为属性值，最后一项为分类（正反例）
     labels = ['no surfacing', 'flippers']                   # 属性值对应的label
     return dataSet, labels
 
@@ -20,7 +21,7 @@ def calcShannonEnt(dataSet):
     """ 计算香农熵：即信息的期望，表示数据的混乱程度 """
 
     labelCounts = Counter([i[-1] for i in dataSet])
-    shannonEnt = 0.0                                        # 根据分类统计信息个数
+    shannonEnt = 0.0                                        # 统计正反例个数
     for _, v in labelCounts.items():
         prob = float(v) / len(dataSet)                      # 信息：选择该分类的概率的负对数（概率越大，香农熵越小，混合数据越少）
         shannonEnt += prob * log(prob, 2)
@@ -48,7 +49,7 @@ def chooseBestFeatureToSplit(dataSet):
     baseEntropy = calcShannonEnt(dataSet)                   # 原始香农熵
     infoGainList = []                                       # 记录最大划分信息增益（熵或数据无序度减少的程度）及其特征编号
 
-    for i in range(len(dataSet[0]) - 1):                    # 逐列取特征，其中最后一列为分类
+    for i in range(len(dataSet[0]) - 1):                    # 逐列取特征，其中最后一列为分类（正反例）
         featList = {example[i] for example in dataSet}      # 存放一列属性值的列表
         newEntropy = 0.0
         for value in featList:                              # 依当前特征、逐个属性值划分数据集
@@ -72,7 +73,7 @@ def createTree(dataSet, labels):
     :return:
     """
 
-    classList = [example[-1] for example in dataSet]        # 取当前数据集的所有分类数据
+    classList = [example[-1] for example in dataSet]        # 取当前数据集的所有正反例信息
 
     if classList.count(classList[0]) == len(classList):     # 类别完全相同，停止划分
         return classList[0]
@@ -176,8 +177,20 @@ def grabTree(filename):
     return pickle.load(open(filename))
 
 
+def lensesClassTest(path):
+    """ 隐形眼镜分类测试 """
+
+    with open(os.path.join(path, "lenses.txt")) as f:
+        lenses = [line.strip().split("\t") for line in f.readlines()]
+    lensesLabels = ["age", "prescript", "astigmatic", "tearRate"]
+    lensesTree = createTree(lenses, lensesLabels)
+
+    return lensesTree
+
+
 if __name__ == "__main__":
     myDat, labels = createDataSet()
+
     # print(calcShannonEnt(myDat))
     # print(splitDataSet(myDat, 0, 1))
     # print(chooseBestFeatureToSplit(myDat))
@@ -186,8 +199,9 @@ if __name__ == "__main__":
     # getNumLeafs({'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}})
     # getTreeDepth({'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}})
     # print(getTreeDepth(retrieveTree(0)))
-    # createPlot()
 
-    mytree = retrieveTree(0)
+    # mytree = retrieveTree(0)
+    # print(classify(mytree, labels, [1, 0]))
 
-    print(classify(mytree, labels, [1, 0]))
+    tree = lensesClassTest("D:/machinelearninginaction/Ch03")
+    createPlot(tree)
