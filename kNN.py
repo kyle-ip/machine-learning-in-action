@@ -17,6 +17,86 @@ from numpy import *
         2、多数表决确定分类
 """
 
+class Node:
+    """ 二叉树节点 """
+
+    def __init__(self, data=None, left=None, right=None):
+        self.data = data
+        self.left = left
+        self.right = right
+
+
+class KDNode(Node):
+    """ KD树节点 """
+
+    def __init__(self, data=None, left=None, right=None, axis=None, x=None, y=None):
+        super(KDNode, self).__init__(data, left, right)
+        self.axis = axis                # 记录当前节点划分轴、xy坐标、左右孩子
+        self.x = x
+        self.y = y
+
+
+def createKDTree(pointList, axis=1):
+    """
+    递归创建KD树
+    :param pointList:   当前未分配节点列表
+    :param axis:        当前划分轴
+    :return:
+    """
+
+    if not pointList:               # 所有节点都分配完成，返回空（表示叶节点的没有孩子）
+        return None
+
+    axis = 1 if axis == 0 else 0    # 切换轴
+
+    pointList = sorted(pointList, key=lambda x: x[axis])    # 根据axis轴对节点列表排序
+    median = len(pointList) // 2                            # 根据中位数位置节点划分
+
+    return KDNode(
+        left=createKDTree(pointList[:median], axis),
+        right=createKDTree(pointList[median+1:], axis),
+        axis=axis, x=pointList[median][0][0], y=pointList[median][0][1],
+        data=pointList[median][1]
+    )
+
+
+def cmpNode(point, treeNode):
+    treeNodeVal = treeNode.x if treeNode.axis == 0 else treeNode.y
+    return point[treeNode.axis] > treeNodeVal
+
+
+def distance(point, node):
+    return sqrt(
+        (point[0] - node.x) ** 2 + (point[0] - node.x) ** 2
+    )
+
+
+def separate(point, node, ridus):
+    return distance(point, node) > ridus
+
+
+def searchNode(point, tree, k=3):
+    """ kd树搜索 """
+
+    curNode = tree
+    nodeCache = [curNode]                          # 节点缓存栈
+
+    while curNode.left or curNode.right:
+        curNode = curNode.right if cmpNode(point, curNode) else curNode.left
+        nodeCache.insert(0, curNode)
+
+    ridus = distance(point, nodeCache.pop(0))
+    kNodeList = []
+    for node in nodeCache:
+        dis = distance(point, node)
+        if len(kNodeList) < k:
+            kNodeList.append((node, dis))
+        else:
+            for j, (d, n) in enumerate(kNodeList):
+                if d > dis:
+                    kNodeList[j] = (node, dis)
+
+
 
 def classify0(inX, dataSet, labels, k):
     """
@@ -148,6 +228,7 @@ def img2vector(filename):
     return returnVect
 
 
+# 测试：手写字体识别
 def handwritingClassTest(path, k=3):
     """
     手写字体识别
@@ -187,9 +268,9 @@ def handwritingClassTest(path, k=3):
     print("\nthe total error rate is: %f" % (errorCount/float(mTest)))
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    filename = "D:/machinelearninginaction/Ch02/datingTestSet2.txt"
+    # filename = "D:/machinelearninginaction/Ch02/datingTestSet2.txt"
 
     # group, labels = createDataSet()
     # print(classify0([0, 0], group, labels, 3))
@@ -217,5 +298,19 @@ if __name__ == "__main__":
     # filename = "D:/machinelearninginaction/Ch02/testDigits/0_13.txt"
     # print(img2vector(filename))
 
-    path = "D:/machinelearninginaction/Ch02/"
-    handwritingClassTest(path, 2)
+    # path = "D:/machinelearninginaction/Ch02/"
+    # handwritingClassTest(path, 2)
+    
+    
+
+    tree = createKDTree(
+        pointList=list(
+            zip(
+                [[7, 2], [5, 4], [9, 6], [2, 3], [4, 7], [8, 1]],
+                [0, 1, 0, 1, 1, 0]
+            )
+        )
+    )
+
+    searchNode((8, 5), tree)
+    
