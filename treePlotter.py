@@ -52,16 +52,16 @@ def plotTree(myTree, parentPt, nodeTxt):    # if the first key tells you what fe
         plotTree.yOff
     )
 
-    plotMidText(cntrPt, parentPt, nodeTxt)              # 标记子节点属性值
+    plotMidText(cntrPt, parentPt, nodeTxt)                      # 标记子节点属性值
     plotNode(firstStr, cntrPt, parentPt, decisionNode)
     secondDict = myTree[firstStr]
 
     plotTree.yOff = plotTree.yOff - 1.0 / plotTree.totalD   # 减少y偏移
 
     for k, v in secondDict.items():
-        if isinstance(v, dict):                 # 递归打印子树
+        if isinstance(v, dict):                             # 递归打印子树
             plotTree(v, cntrPt, str(k))
-        else:                                   # 打印叶节点
+        else:                                               # 打印叶节点
             plotTree.xOff = plotTree.xOff + 1.0/plotTree.totalW
             plotNode(v, (plotTree.xOff, plotTree.yOff), cntrPt, leafNode)
             plotMidText((plotTree.xOff, plotTree.yOff), cntrPt, str(k))
@@ -75,8 +75,8 @@ def createPlot(inTree):
     fig = plt.figure(1, facecolor='white')
     fig.clf()
     axprops = dict(xticks=[], yticks=[])
-    createPlot.ax1 = plt.subplot(111, frameon=False, **axprops)    # no ticks
-    # createPlot.ax1 = plt.subplot(111, frameon=False) #ticks for demo puropses
+    createPlot.ax1 = plt.subplot(111, frameon=False, **axprops)     # no ticks
+    # createPlot.ax1 = plt.subplot(111, frameon=False)              # ticks for demo puropses
     plotTree.totalW = float(getNumLeafs(inTree))
     plotTree.totalD = float(getTreeDepth(inTree))
     plotTree.xOff = -0.5/plotTree.totalW; plotTree.yOff = 1.0;
