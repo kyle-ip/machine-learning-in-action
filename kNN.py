@@ -97,7 +97,6 @@ def searchNode(point, tree, k=3):
                     kNodeList[j] = (node, dis)
 
 
-
 def classify0(inX, dataSet, labels, k):
     """
     k-近邻算法分类器（线性扫描）
