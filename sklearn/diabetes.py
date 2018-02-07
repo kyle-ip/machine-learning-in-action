@@ -2,10 +2,11 @@
 # @Time    : 2018/2/7
 # @Author  : yipwinghong
 # @Email   : yipwinghong@outlook.com
-# @File    : diabetes.py    糖尿病线性回归测试（广义线性回归模型）
+# @File    : diabetes.py    线性回归测试（糖尿病）
 # @Software: PyCharm
 
 """
+    广义线性回归模型
     其他回归模型：
         岭回归         采用带罚项的残差平方和损失函数
         Lasso回归      采用待L1范数的罚项平方损失函数
