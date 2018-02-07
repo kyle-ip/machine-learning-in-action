@@ -312,4 +312,3 @@ def handwritingClassTest(path, k=3):
     )
 
     searchNode((8, 5), tree)
-    

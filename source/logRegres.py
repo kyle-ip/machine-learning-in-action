@@ -133,7 +133,7 @@ def colicTest():
         if classifyVector(array(lineArr), trainWeights) != int(currLine[-1]):        # 统计分类失败次数
             errorCount += 1
     errorRate = errorCount / numTestVec
-    print("the error rate of this test is: {0}".format(errorRate))
+    print("the error rate of this source is: {0}".format(errorRate))
     return errorRate
 
 
