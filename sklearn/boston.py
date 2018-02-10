@@ -55,6 +55,25 @@ def null_count(data):
     return null_data
 
 
+def fill_null(data, features, judge_feature, judge_value, replace_value):
+    """
+    填补缺失值
+    :param data:
+    :param features:        特征列表
+    :param judge_feature:   判断特征
+    :param judge_value:     判断值
+    :param replace_value:   替换值
+    :return:
+    """
+    for feature in features:
+        null_index = data[data[feature].isnull()].index         # 查找该特征缺失的样本的索引
+        sp_index = [i for i in null_index if data[judge_feature][i] != judge_value]     # 查找判断特征对应值不合理的样本的索引
+        data[feature].fillna(replace_value, inplace=True)       # 使用替换值填补缺失值
+        for i in sp_index:
+            data[feature].iloc[i] = data[feature].mode()[0]     # 众数填补缺失值
+    return data
+
+
 # 忽略Warnings
 def ignore(*args, **kwargs):
     pass
@@ -101,4 +120,35 @@ sns.set(style='darkgrid')
 
 # 合并训练集和测试集
 data = pd.concat([training_set, test_set], axis=0, ignore_index=True)
-null_count(data)
+# null_count(data)
+
+# 缺失值处理
+zero_replace_features = [
+    'BsmtHalfBath', 'BsmtHalfBath', 'BsmtFullBath',
+    'BsmtUnfSF', 'TotalBsmtSF', 'BsmtFinSF2', 'BsmtFinSF1'
+]                                                   # 使用0填补
+for feature in zero_replace_features:
+    data[feature].fillna(0.0, inplace=True)
+
+features = [
+    'BsmtQual', 'BsmtCond', 'BsmtExposure',
+    'BsmtFinType1', 'BsmtFinType2'
+]                                                   # 使用'U'填补
+data = fill_null(data, features, 'TotalBsmtSF', 0.0, 'U')
+data = fill_null(data, ['PoolQC'], 'PoolArea', 0, 'U')
+
+
+mode_inplace = [
+    'MSZoning', 'Utilities', 'Exterior1st', 'Electrical',
+    'Exterior2nd', 'KitchenQual', 'SaleType'
+]                                                   # 使用众数填补
+for feature in mode_inplace:
+    data[feature].fillna(data[feature].mode()[0], inplace=True)
+
+g = sns.factorplot(
+    x='KitchenAbvGr', y='KitchenQual',
+    data=data, kind='box'
+)
+
+data['Functional'].fillna('Typ', inplace=True)      # 使用'TYP'填补
+plt.show()
