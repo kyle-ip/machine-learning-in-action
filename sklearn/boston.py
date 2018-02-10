@@ -48,6 +48,8 @@ def null_count(data):
     :return:        所有特征的缺失值个数
     """
     null_data = data.isnull().sum()     # 计算缺失值数量
+    print(null_data)
+
     null_data = null_data.drop(null_data[null_data == 0].index).sort_values(ascending=False)
 
     return null_data
