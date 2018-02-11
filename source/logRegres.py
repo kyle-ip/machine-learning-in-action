@@ -1,3 +1,12 @@
+"""
+    Logistic回归
+
+    优点：计算代价不高，易于理解和实现
+    缺点：容易欠拟合，分类精度可能不高
+    适用数据类型：数值型和标称型数据
+
+"""
+
 from numpy import *
 import matplotlib.pyplot as plt
 

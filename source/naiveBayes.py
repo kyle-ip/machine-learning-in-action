@@ -1,16 +1,19 @@
-import re
-
-from numpy import *
-
-import feedparser
-
 """
     朴素贝叶斯：假设每个特征同等重要（特征之间相互独立）
     实现方式：基于伯努利模型（只考虑是否出现）或基于多项式模型（考虑出现次数）
         p(ci|x, y)      后验概率：已知坐标(x, y)，其属于类ci的概率
         p(ci)           先验概率：类c1的概率
         p(ci|x, y) = p(x, y|ci)p(ci) / p(x, y)
+
+    优点：在数据缺少的情况下依然有效，可以处理多类别问题
+    缺点：对于输入数据的准备方式较为敏感
+    适用数据类型：标称型数据
 """
+
+import re
+
+from numpy import *
+import feedparser
 
 
 def loadDataSet():

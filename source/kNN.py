@@ -1,11 +1,3 @@
-import operator
-import os
-from collections import Counter
-
-import matplotlib
-import matplotlib.pyplot as plt
-from numpy import *
-
 """
     K近邻：
         1、训练集
@@ -15,7 +7,20 @@ from numpy import *
     对于任何一个新的输入实例它所属的类唯一地确定：
         1、寻找近邻点（线性扫描：效率低，kd树：适合训练实例数远大于空间维数的情况）
         2、多数表决确定分类
+
+    优点：精度高，对异常值不敏感，无数据输入假定
+    缺点：计算复杂度高，空间复杂度高
+    使用数据范围：数值型和标称型
 """
+
+import operator
+import os
+from collections import Counter
+
+import matplotlib
+import matplotlib.pyplot as plt
+from numpy import *
+
 
 class Node:
     """ 二叉树节点 """
