@@ -28,7 +28,7 @@
 分类问题：预测明天天气（雨/阴/晴...）
 
 
-#### 半监督学习(Semi-supervised Learning)、非监督学习(Unsupervised learing)
+#### 半监督学习(Semi-supervised Learning)、非监督学习(Unsupervised Learning)
 
 ## 监督学习分类算法简介
 > ...（图 + 板书 + 简单代码演示）
